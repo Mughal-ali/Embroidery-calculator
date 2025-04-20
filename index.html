@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embroidery Cost Calculator</title>
+  <style>
+    /* Tailwind CSS subset for offline use */
+    .bg-gray-100 { background-color: #f3f4f6; }
+    .bg-white { background-color: #ffffff; }
+    .bg-blue-600 { background-color: #2563eb; }
+    .bg-blue-700 { background-color: #1d4ed8; }
+    .text-gray-700 { color: #374151; }
+    .text-gray-800 { color: #1f2937; }
+    .text-white { color: #ffffff; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .font-bold { font-weight: 700; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .min-h-screen { min-height: 100vh; }
+    .w-full { width: 100%; }
+    .max-w-md { max-width: 28rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-6 { padding: 1.5rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mr-2 { margin-right: 0.5rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .block { display: block; }
+    .border { border-width: 1px; border-color: #d1d5db; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    .text-center { text-align: center; }
+    .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+    input[type="number"] { -webkit-appearance: none; appearance: none; }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center mb-4">Embroidery Cost Calculator</h1>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Stitch Count</label>
+        <input type="number" id="stitch" class="mt-1 block w-full p-2 border rounded-md" placeholder="Enter stitch count" step="1" min="0">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Rate</label>
+        <input type="number" id="rate" class="mt-1 block w-full p-2 border rounded-md" placeholder="Enter rate" step="0.01" min="0">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Multiplier 1 (default: 2.8)</label>
+        <input type="number" id="multiplier1" class="mt-1 block w-full p-2 border rounded-md" value="2.8" step="0.01" disabled>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Multiplier 2 (default: 8.66)</label>
+        <input type="number" id="multiplier2" class="mt-1 block w-full p-2 border rounded-md" value="8.66" step="0.01" disabled>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Divisor (default: 1000)</label>
+        <input type="number" id="divisor" class="mt-1 block w-full p-2 border rounded-md" value="1000" step="1" disabled>
+      </div>
+      <div class="flex items-center">
+        <input type="checkbox" id="lockToggle" class="mr-2">
+        <label for="lockToggle" class="text-sm font-medium text-gray-700">Unlock to edit fixed values</label>
+      </div>
+      <button id="calculate" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Calculate</button>
+      <div id="result" class="text-center text-lg font-semibold text-gray-800"></div>
+    </div>
+  </div>
+  <script>
+    const stitchInput = document.getElementById('stitch');
+    const rateInput = document.getElementById('rate');
+    const multiplier1Input = document.getElementById('multiplier1');
+    const multiplier2Input = document.getElementById('multiplier2');
+    const divisorInput = document.getElementById('divisor');
+    const lockToggle = document.getElementById('lockToggle');
+    const calculateButton = document.getElementById('calculate');
+    const resultDiv = document.getElementById('result');
+    lockToggle.addEventListener('change', () => {
+      const isLocked = !lockToggle.checked;
+      multiplier1Input.disabled = isLocked;
+      multiplier2Input.disabled = isLocked;
+      divisorInput.disabled = isLocked;
+    });
+    calculateButton.addEventListener('click', () => {
+      const stitch = parseFloat(stitchInput.value) || 0;
+      const rate = parseFloat(rateInput.value) || 0;
+      const multiplier1 = parseFloat(multiplier1Input.value) || 2.8;
+      const multiplier2 = parseFloat(multiplier2Input.value) || 8.66;
+      const divisor = parseFloat(divisorInput.value) || 1000;
+      if (stitch <= 0 || rate <= 0) {
+        resultDiv.textContent = 'Please enter valid stitch count and rate.';
+        return;
+      }
+      if (divisor === 0) {
+        resultDiv.textContent = 'Divisor cannot be zero.';
+        return;
+      }
+      const amount = (stitch * multiplier1 * multiplier2 * rate) / divisor;
+      resultDiv.textContent = `Amount: $${amount.toFixed(2)}`;
+    });
+  </script>
+</body>
+</html>
